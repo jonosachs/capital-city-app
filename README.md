@@ -1,6 +1,6 @@
-# Capital city finder
+# Capital City Finder
 
-Full stack capital city finder app
+Full-stack capital city finder app.
 
 Frontend:
 HTML, CSS, Vanilla JavaScript
