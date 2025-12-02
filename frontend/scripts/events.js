@@ -18,7 +18,7 @@ export function setupListeners() {
 
     try {
       const country = await getCountry(input.value);
-      if ((country.city == "") | (country.city == null)) {
+      if ((country.city === "") || (country.city == null)) {
         output.textContent = "Could not find capital";
       } else {
         output.textContent = country.city;

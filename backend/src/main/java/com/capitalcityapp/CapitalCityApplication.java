@@ -1,4 +1,4 @@
-package com.example.capitalcityapp;
+package com.capitalcityapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
