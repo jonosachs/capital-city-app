@@ -22,8 +22,9 @@ public class LoadDatabase {
 
         return args -> {
 
-            //TODO: don't call findAll
-            if (countryRepo.findAll().isEmpty()) {
+            if (countryRepo.count() == 0) {
+
+                countryRepo.deleteAll();
 
                 try {
                     ObjectMapper mapper = new ObjectMapper();

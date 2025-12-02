@@ -16,7 +16,7 @@ class CountryController {
         this.countryService = countryService;
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     List<CountryResponse> all() {
         return countryService.findAll();
     }
