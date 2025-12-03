@@ -26,5 +26,4 @@ class CountryController {
         return countryService.findByName(country);
     }
 
-
 }
