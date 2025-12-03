@@ -49,6 +49,14 @@ python -m http.server 5500
 ```
 5) Open `http://127.0.0.1:5500` and search for a country.
 
+## Tests
+- Backend unit tests cover `CountryService` (mapping DB results to DTOs) and `CountryController` (JSON shape and status codes via `@WebMvcTest` with mocked service).
+- Run all backend tests:
+```
+cd backend
+./mvnw test
+```
+
 ## API
 - `GET /countries` — returns all country/capital pairs.
 - `GET /countries/{countryName}` — returns a single entry; 404 if not found.
