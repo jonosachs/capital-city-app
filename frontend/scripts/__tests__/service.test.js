@@ -16,3 +16,5 @@ test("invalid country throws", async () => {
   await expect(getCountry("NotACountry")).rejects.toThrow();
   expect(api.getCountryFromInput).toHaveBeenCalledWith("NotACountry");
 });
+
+

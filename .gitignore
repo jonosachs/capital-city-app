@@ -6,3 +6,4 @@ target/
 docker-data/
 .mvn/
 .vscode/
+frontend/node_modules/
