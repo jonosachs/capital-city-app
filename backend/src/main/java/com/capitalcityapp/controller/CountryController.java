@@ -11,25 +11,30 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitalcityapp.dto.CountryResponse;
 import com.capitalcityapp.service.CountryService;
 
-@CrossOrigin(origins = "http://127.0.0.1:5500") // front-end's origin
+// front-end's origin
+@CrossOrigin(origins = {
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    "http://localhost:3000"
+})
 @RequestMapping("/countries")
 @RestController
 class CountryController {
 
-    private final CountryService countryService;
+    private final CountryService service;
 
-    CountryController(CountryService countryService) {
-        this.countryService = countryService;
+    CountryController(CountryService service) {
+        this.service = service;
     }
 
     @GetMapping("")
     List<CountryResponse> all() {
-        return countryService.findAll();
+        return service.findAll();
     }
 
     @GetMapping("/{country}")
     CountryResponse getCountry(@PathVariable String country) {
-        return countryService.findByName(country);
+        return service.findByName(country);
     }
 
 }

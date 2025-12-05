@@ -14,16 +14,25 @@ export function setupListeners() {
       return;
     }
 
-    show("Loading...");
-    const country = await getCountryFromInput(input.value);
-    show(country);
+    try {
+      show("Loading...");
+      const country = await getCountryFromInput(input.value);
+      show(country);
+    } catch (error) {
+      show(error.message);
+    }
   });
 
   input.addEventListener("input", async () => {
     clear();
     if (!input.value) return;
-    const suggestions = await getSuggestions(input.value);
-    show(suggestions);
+
+    try {
+      const suggestions = await getSuggestions(input.value);
+      show(suggestions);
+    } catch (error) {
+      show(error.message);
+    }
   });
 
   function clear() {

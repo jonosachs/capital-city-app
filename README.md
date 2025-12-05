@@ -26,7 +26,7 @@ POSTGRES_DB=capital_db
 ```
 docker compose up --build
 ```
-3) Frontend: serve the contents of `frontend/` from `http://127.0.0.1:5500` (e.g., VS Code Live Server or `python -m http.server 5500`), then open the page in your browser.
+3) Frontend: serve the contents of `frontend/` from an allowed origin (`http://127.0.0.1:5500`, `http://localhost:5500`, or `http://localhost:3000`; e.g., VS Code Live Server or `python -m http.server 5500`), then open the page in your browser.
 4) Backend API: available at `http://localhost:8080`.
 
 ## Running locally without Docker
@@ -42,7 +42,7 @@ export SPRING_PASSWORD=your_db_password
 cd backend
 ./mvnw spring-boot:run
 ```
-4) Serve the frontend (must be `http://127.0.0.1:5500` to satisfy CORS):
+4) Serve the frontend (`http://127.0.0.1:5500`, `http://localhost:5500`, or `http://localhost:3000` are allowed for CORS):
 ```
 cd frontend
 python -m http.server 5500
@@ -55,6 +55,11 @@ python -m http.server 5500
 ```
 cd backend
 ./mvnw test
+```
+- Frontend Jest tests cover client helpers (e.g., `getCountry` contract with the API module).
+```
+cd frontend
+npm test
 ```
 
 ## API
