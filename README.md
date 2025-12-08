@@ -72,8 +72,9 @@ curl http://localhost:8080/countries/France
 ```
 Response:
 ```json
-{"id":45,"country":"France","city":"Paris"}
+{"country":"France","capital":"Paris"}
 ```
+The API returns a DTO without the database `id`, exposing only the country and capital fields.
 
 ## Frontend use
 - Start typing a country to see suggestions.
