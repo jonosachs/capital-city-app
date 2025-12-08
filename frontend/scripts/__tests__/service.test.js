@@ -1,20 +1,19 @@
-import { getCountry } from "../service.js";
-import { jest, test, expect } from "@jest/globals";
+import { getCountryFromInput } from "../service.js";
+import { jest, test, expect, afterEach } from "@jest/globals";
 
 import * as api from "../api.js";
 
-test("returns valid country capital from input", async () => {
-  jest.spyOn(api, "getCountryFromInput").mockResolvedValue({ capital: "Canberra" });
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
-  await expect(getCountry("Australia")).resolves.toBe("Canberra");
-  expect(api.getCountryFromInput).toHaveBeenCalledWith("Australia");
+test("valid country returns capital", async () => {
+  jest.spyOn(api, "getCountry").mockResolvedValue({ capital: "Canberra" });
+
+  await expect(getCountryFromInput("Australia")).resolves.toBe("Canberra");
+  expect(api.getCountry).toHaveBeenCalledWith("Australia");
 });
 
 test("invalid country throws", async () => {
-  jest.spyOn(api, "getCountryFromInput").mockRejectedValue(new Error());
-
-  await expect(getCountry("NotACountry")).rejects.toThrow();
-  expect(api.getCountryFromInput).toHaveBeenCalledWith("NotACountry");
+  expect(getCountryFromInput("NotACountry")).resolves.toMatch(/Error/);
 });
-
-

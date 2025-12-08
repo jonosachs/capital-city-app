@@ -1,50 +1,34 @@
-import { getCountryFromInput } from "./api.js";
-import { getSuggestions } from "./service.js";
+import { getCountryFromInput, getSuggestions } from "./service.js";
 
 export function setupListeners() {
   const submit = document.getElementById("submit-btn");
   const input = document.getElementById("input");
   const output = document.getElementById("output");
 
-  submit.addEventListener("click", async () => {
-    clear();
-
-    if (!input.value) {
-      show("Please enter country");
-      return;
-    }
-
-    try {
-      show("Loading...");
-      const country = await getCountryFromInput(input.value);
-      show(country);
-    } catch (error) {
-      show(error.message);
-    }
-  });
-
   input.addEventListener("input", async () => {
-    clear();
+    clearOutput();
     if (!input.value) return;
-
-    try {
-      const suggestions = await getSuggestions(input.value);
-      show(suggestions);
-    } catch (error) {
-      show(error.message);
-    }
+    var sugggestions = await getSuggestions(input.value);
+    show(sugggestions);
   });
 
-  function clear() {
-    output.textContent = "";
+  submit.addEventListener("click", async () => {
+    clearOutput();
+    if (!input.value) return;
+    var capital = await getCountryFromInput(input.value);
+    show(capital);
+  });
+}
+
+function clearOutput() {
+  output.textContent = "";
+}
+
+function show(msg) {
+  if (msg instanceof Node) {
+    output.replaceChildren(msg);
+    return;
   }
 
-  function show(msg) {
-    if (msg instanceof Node) {
-      output.replaceChildren(msg);
-      return;
-    }
-
-    output.textContent = msg;
-  }
+  output.textContent = msg;
 }

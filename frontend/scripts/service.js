@@ -1,36 +1,43 @@
-import { getAll, getCountryFromInput } from "./api.js";
+import { getAll, getCountry } from "./api.js";
 
-export async function getCountry(inputValue) {
+export async function getCountryFromInput(inputValue) {
   try {
-    const data = await getCountryFromInput(inputValue);
+    const data = await getCountry(inputValue);
     const capital = data?.country?.capital ?? data?.capital ?? "";
     if (!capital) {
       return "Could not find capital";
     }
     return capital;
   } catch (error) {
-    throw new Error("Error getting country: ", error.message);
+    return "Error getting country: ", error.message;
   }
 }
 
 export async function getSuggestions(inputValue) {
   try {
     const all = await getAll();
+
     const filtered = all.filter((c) =>
       c.country.toLowerCase().startsWith(inputValue.toLowerCase())
     );
+    if (filtered.length == 0) return "No matches";
 
-    //make suggestions clickable
     const container = document.createElement("div");
+
     filtered.forEach((f) => {
       const field = document.createElement("div");
       field.textContent = f.country;
       field.className = "suggestions";
 
-      field.addEventListener("click", (event) => {
+      //make suggestions clickable
+      field.addEventListener("click", async (event) => {
         const target = event.currentTarget;
+
         if (target && target.textContent) {
           document.getElementById("input").value = target.textContent;
+          container.replaceChildren("");
+
+          return container;
         }
       });
 
@@ -39,6 +46,6 @@ export async function getSuggestions(inputValue) {
 
     return container;
   } catch (error) {
-    throw new Error("Error getting suggestions: " + error.message);
+    return "Error getting suggestions: " + error.message;
   }
 }

@@ -1,22 +1,22 @@
-export async function getCountryFromInput(country) {
+export async function getCountry(country) {
   const encodedCountry = encodeURIComponent(country.trim());
   const response = await fetch(`http://localhost:8080/countries/${encodedCountry}`);
-  const jsonResponse = await response.json();
 
   if (!response.ok) {
     throw new Error(jsonResponse.message || "Unable to fetch country");
   }
 
+  const jsonResponse = await response.json();
   return jsonResponse;
 }
 
 export async function getAll() {
   const response = await fetch(`http://localhost:8080/countries`);
-  const jsonResponse = await response.json();
 
   if (!response.ok) {
-    throw new Error(jsonResponse.message || "Unable to fetch country list");
+    throw new Error(jsonResponse.message || "Unable to fetch countries");
   }
 
+  const jsonResponse = await response.json();
   return jsonResponse;
 }
