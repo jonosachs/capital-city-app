@@ -8,13 +8,14 @@ Spring Boot API serving selected country data with mini JavaScript front-end for
 
 - Spring Boot 3, Java 17, Maven
 - PostgreSQL + Spring Data JPA
+- Flyway for schema migrations and seed data
 - Bootstrap 5 (via CDN)
 - Vanilla JavaScript
 - Docker and Docker Compose for local orchestration
 
 ## How it works
 
-- The backend seeds country data from `countries.json` into PostgreSQL at startup.
+- Flyway owns the database schema. On startup it applies any pending migrations from `backend/src/main/resources/db/migration`: `V1` creates the `country` table, `V2` seeds it with 51 countries. Hibernate runs with `ddl-auto=validate`, so it never modifies the schema — it only checks that the entities match it, and fails fast if they drift.
 - REST endpoints expose the dataset: list all countries or fetch a single country by name (case-insensitive).
 - The frontend fetches all countries on load, caches them in memory to avoid redundant API calls, and uses a `<datalist>` for native autocomplete suggestions. Country data is rendered in a Bootstrap table, with errors surfaced inline.
 
@@ -28,14 +29,16 @@ POSTGRES_PASSWORD=capital_pass
 POSTGRES_DB=capital_db
 ```
 
-2. Start the stack:
+2. Start the whole stack — database, backend, and frontend:
 
 ```
 docker compose up --build
 ```
 
-3. Frontend: serve the contents of `frontend/` from an allowed origin (`http://127.0.0.1:5500`, `http://localhost:5500`, or `http://localhost:3000`; e.g., VS Code Live Server or `python -m http.server 5500`), then open the page in your browser.
+3. Open the app at `http://localhost:3000` (served by nginx; the port is one of the origins allowed by CORS).
 4. Backend API: available at `http://localhost:8080`.
+
+The `frontend/` directory is bind-mounted read-only into the nginx container, so edits to HTML/CSS/JS show up on refresh without a rebuild.
 
 ## Running locally without Docker
 
@@ -43,12 +46,12 @@ docker compose up --build
 2. Export environment variables for Spring Boot (values should match your local DB):
 
 ```
-export SPRING_URL=jdbc:postgresql://localhost:5432/capital_db
-export SPRING_USERNAME=your_db_user
-export SPRING_PASSWORD=your_db_password
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/capital_db
+export SPRING_DATASOURCE_USERNAME=your_db_user
+export SPRING_DATASOURCE_PASSWORD=your_db_password
 ```
 
-3. Boot the API:
+3. Boot the API. Flyway creates and seeds the schema on first run:
 
 ```
 cd backend
@@ -62,7 +65,21 @@ cd frontend
 npx serve .
 ```
 
-5. Open `http://127.0.0.1:5500` and search for a country.
+5. Open the served URL and search for a country.
+
+## Database migrations
+
+Migrations live in `backend/src/main/resources/db/migration` and follow Flyway's naming convention, `V<version>__<description>.sql`. They are applied in version order on startup and recorded in the `flyway_schema_history` table.
+
+To change the schema or the data, add a new migration (`V3__...sql`) rather than editing an applied one — Flyway checksums applied migrations and will refuse to start if one changes underneath it.
+
+To wipe the database and replay every migration from scratch (local dev only — this destroys the volume):
+
+```
+docker compose down -v && docker compose up --build
+```
+
+`backend/scripts/db_seed_script.py` generates the seed migration from `countries.json`, and is how `V2__seed_country.sql` was produced.
 
 ## Tests
 
@@ -83,7 +100,7 @@ npm test
 
 ## API
 
-- `GET /countries` — returns all country/capital pairs.
+- `GET /countries` — returns all 51 country records.
 - `GET /countries/{countryName}` — returns a single entry; 404 if not found.
 
 Example:
@@ -101,7 +118,7 @@ Response:
   "capital": "Paris",
   "region": "Europe",
   "population": "65273511",
-  "currency": "Euro"
+  "currency": "EUR"
 }
 ```
 
@@ -113,8 +130,9 @@ Response:
 
 ## Project layout
 
-- `backend/` — Spring Boot service, JPA entities, seed loader, API controllers.
-- `frontend/` — static HTML/CSS/JS client.
+- `backend/` — Spring Boot service, JPA entities, Flyway migrations, API controllers.
+- `backend/src/main/resources/db/migration/` — schema and seed migrations.
+- `frontend/` — static HTML/CSS/JS client, served by nginx in Compose.
 
 ## Notes
 
